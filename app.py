@@ -1,17 +1,4 @@
-"""
-Resume Screening System - Streamlit app.
-
-Two tools:
-1. Decision Predictor - paste a candidate's skills, get a predicted
-   Recruiter Decision from the trained SVM (model.pkl + tfidf.pkl +
-   label_encoder.pkl).
-2. JD Matching & Ranking - paste a job description and one or more
-   resumes, get a ranked cosine-similarity match table with matched
-   keywords shown per resume.
-"""
-
 import os
-
 import joblib
 import pandas as pd
 import streamlit as st
@@ -29,7 +16,6 @@ st.set_page_config(
     layout="wide",
 )
 
-
 @st.cache_resource(show_spinner=False)
 def load_artifacts():
     """Load the trained TF-IDF vectorizer, classifier, and label encoder."""
@@ -40,7 +26,6 @@ def load_artifacts():
     model = joblib.load(MODEL_PATH)
     encoder = joblib.load(ENCODER_PATH)
     return tfidf, model, encoder, []
-
 
 def predict_decision(skills_text: str, tfidf, model, encoder):
     cleaned = clean_text(skills_text)
@@ -56,7 +41,6 @@ def predict_decision(skills_text: str, tfidf, model, encoder):
         except Exception:
             proba = None
     return label, proba
-
 
 def render_predictor_tab():
     st.subheader("Predict a Recruiter Decision from Skills")
@@ -94,7 +78,6 @@ def render_predictor_tab():
             ).sort_values("confidence", ascending=False)
             proba_df["confidence"] = (proba_df["confidence"] * 100).round(1)
             st.bar_chart(proba_df.set_index("decision"))
-
 
 def render_matching_tab():
     st.subheader("Match & Rank Resumes Against a Job Description")
@@ -169,7 +152,6 @@ def render_matching_tab():
                 else:
                     st.write("No overlapping keywords found.")
 
-
 def main():
     st.title("🧾 Resume Screening System")
     st.write(
@@ -183,7 +165,6 @@ def main():
         render_predictor_tab()
     with tab2:
         render_matching_tab()
-
 
 if __name__ == "__main__":
     main()
