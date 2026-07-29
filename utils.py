@@ -13,7 +13,6 @@ around in the original notebook:
                                "no experience with X" doesn't score as a
                                match for X.
 """
-
 import io
 import os
 import re
@@ -39,7 +38,6 @@ def ensure_nltk_data() -> None:
             nltk.data.find(path)
         except LookupError:
             nltk.download(name, quiet=True)
-
 
 ensure_nltk_data()
 
@@ -130,7 +128,6 @@ def rank_resumes(job_description: str, resumes: dict) -> "tuple":
 
     return results, clean_jd, clean_resumes
 
-
 def matched_keywords(clean_jd: str, clean_resume: str, top_n: int = 10) -> list:
     """Return keywords shared between a cleaned JD and a cleaned resume.
 
@@ -141,16 +138,13 @@ def matched_keywords(clean_jd: str, clean_resume: str, top_n: int = 10) -> list:
     resume_terms = {t for t in clean_resume.split() if not t.startswith("NEG_")}
     return sorted(jd_terms & resume_terms)[:top_n]
 
-
-# ---------------------------------------------------------------------------
+# --
 # File text extraction: lets the app accept .txt, .pdf, .docx, and image
 # (.jpg/.jpeg/.png/etc.) resume uploads, not just pasted text.
-# ---------------------------------------------------------------------------
-
+# --
 
 def _extract_text_from_txt(file_bytes: bytes) -> str:
     return file_bytes.decode("utf-8", errors="ignore")
-
 
 def _extract_text_from_pdf(file_bytes: bytes) -> str:
     """Extract text from a PDF. Falls back to OCR for scanned/image-only PDFs."""
@@ -179,7 +173,6 @@ def _extract_text_from_pdf(file_bytes: bytes) -> str:
     except Exception:
         return ""
 
-
 def _extract_text_from_docx(file_bytes: bytes) -> str:
     from docx import Document
 
@@ -194,7 +187,6 @@ def _extract_text_from_docx(file_bytes: bytes) -> str:
                     paragraphs.append(cell.text)
 
     return "\n".join(paragraphs)
-
 
 def _extract_text_from_image_obj(image) -> str:
     import pytesseract
