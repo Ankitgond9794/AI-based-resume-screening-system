@@ -9,7 +9,6 @@ Two tools:
    resumes, get a ranked cosine-similarity match table with matched
    keywords shown per resume.
 """
-
 import os
 
 import joblib
@@ -38,7 +37,6 @@ st.set_page_config(
     layout="wide",
 )
 
-
 @st.cache_resource(show_spinner=False)
 def load_artifacts():
     """Load the trained TF-IDF vectorizer, classifier, and label encoder."""
@@ -49,7 +47,6 @@ def load_artifacts():
     model = joblib.load(MODEL_PATH)
     encoder = joblib.load(ENCODER_PATH)
     return tfidf, model, encoder, []
-
 
 def predict_decision(skills_text: str, tfidf, model, encoder):
     cleaned = clean_text(skills_text)
@@ -65,7 +62,6 @@ def predict_decision(skills_text: str, tfidf, model, encoder):
         except Exception:
             proba = None
     return label, proba
-
 
 def render_predictor_tab():
     st.subheader("Predict a Recruiter Decision from Skills")
@@ -136,7 +132,6 @@ def render_predictor_tab():
             ).sort_values("confidence", ascending=False)
             proba_df["confidence"] = (proba_df["confidence"] * 100).round(1)
             st.bar_chart(proba_df.set_index("decision"))
-
 
 def render_matching_tab():
     st.subheader("Match & Rank Resumes Against a Job Description")
@@ -221,7 +216,6 @@ def render_matching_tab():
                     st.write(", ".join(keywords))
                 else:
                     st.write("No overlapping keywords found.")
-
 
 def render_ats_tab():
     st.subheader("ATS Score Checker")
@@ -321,7 +315,6 @@ def render_ats_tab():
             for s in result["suggestions"]:
                 st.markdown(f"- {s}")
 
-
 def main():
     st.title("🧾 Resume Screening System")
     st.write(
@@ -339,7 +332,6 @@ def main():
         render_matching_tab()
     with tab3:
         render_ats_tab()
-
 
 if __name__ == "__main__":
     main()
