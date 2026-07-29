@@ -13,7 +13,6 @@ around in the original notebook:
                                "no experience with X" doesn't score as a
                                match for X.
 """
-
 import io
 import os
 import re
@@ -24,7 +23,6 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".webp"}
-
 
 def ensure_nltk_data() -> None:
     """Download required NLTK corpora if they aren't already present."""
@@ -40,13 +38,11 @@ def ensure_nltk_data() -> None:
         except LookupError:
             nltk.download(name, quiet=True)
 
-
 ensure_nltk_data()
 
 STOP_WORDS = set(stopwords.words("english"))
 LEMMATIZER = WordNetLemmatizer()
 NEGATION_CUES = {"no", "not", "nor", "never", "without", "none"}
-
 
 def clean_text(text: str) -> str:
     """Basic clean + lemmatize pipeline (mirrors the notebook's df2 cleaning)."""
@@ -60,7 +56,6 @@ def clean_text(text: str) -> str:
     words = [w for w in words if w not in STOP_WORDS]
     words = [LEMMATIZER.lemmatize(w) for w in words]
     return " ".join(words)
-
 
 def clean_text_negation(text: str) -> str:
     """Clean + lemmatize while tagging words that follow a negation cue.
@@ -93,7 +88,6 @@ def clean_text_negation(text: str) -> str:
         and len(t.replace("NEG_", "")) > 1
     ]
     return " ".join(tokens)
-
 
 def rank_resumes(job_description: str, resumes: dict) -> "tuple":
     """Rank resumes against a job description using TF-IDF cosine similarity.
@@ -130,7 +124,6 @@ def rank_resumes(job_description: str, resumes: dict) -> "tuple":
 
     return results, clean_jd, clean_resumes
 
-
 def matched_keywords(clean_jd: str, clean_resume: str, top_n: int = 10) -> list:
     """Return keywords shared between a cleaned JD and a cleaned resume.
 
@@ -141,16 +134,12 @@ def matched_keywords(clean_jd: str, clean_resume: str, top_n: int = 10) -> list:
     resume_terms = {t for t in clean_resume.split() if not t.startswith("NEG_")}
     return sorted(jd_terms & resume_terms)[:top_n]
 
-
-# ---------------------------------------------------------------------------
+# --
 # File text extraction: lets the app accept .txt, .pdf, .docx, and image
 # (.jpg/.jpeg/.png/etc.) resume uploads, not just pasted text.
-# ---------------------------------------------------------------------------
-
-
+# --
 def _extract_text_from_txt(file_bytes: bytes) -> str:
     return file_bytes.decode("utf-8", errors="ignore")
-
 
 def _extract_text_from_pdf_with_meta(file_bytes: bytes) -> "tuple":
     """Extract text from a PDF, plus whether OCR had to be used.
@@ -208,7 +197,6 @@ def _extract_text_from_pdf_with_meta(file_bytes: bytes) -> "tuple":
         "pages with no OCR result)."
     )
 
-
 def _extract_text_from_docx_with_meta(file_bytes: bytes) -> "tuple":
     """Extract text from a DOCX, plus whether it contains tables.
 
@@ -235,13 +223,11 @@ def _extract_text_from_image_obj(image) -> str:
 
     return pytesseract.image_to_string(image)
 
-
 def _extract_text_from_image_bytes(file_bytes: bytes) -> str:
     from PIL import Image
 
     image = Image.open(io.BytesIO(file_bytes))
     return _extract_text_from_image_obj(image)
-
 
 def extract_text_and_meta(uploaded_file) -> "tuple":
     """Extract text plus format metadata used by the ATS Score Checker.
@@ -284,7 +270,6 @@ def extract_text_and_meta(uploaded_file) -> "tuple":
             "Supported: .txt, .pdf, .docx, .jpg, .jpeg, .png"
         )
 
-
 def extract_text_from_file(uploaded_file) -> str:
     """Extract raw text from an uploaded file of any supported type.
 
@@ -303,10 +288,9 @@ def extract_text_from_file(uploaded_file) -> str:
     return text
 
 
-# ---------------------------------------------------------------------------
+# --
 # ATS Score Checker
-# ---------------------------------------------------------------------------
-
+# --
 EMAIL_PATTERN = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
 PHONE_PATTERN = re.compile(
     r"(\+?\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}"
@@ -323,7 +307,6 @@ BONUS_SECTIONS = {
     "certifications": ["certifications", "certificates", "licenses"],
 }
 
-
 def extract_contact_info(text: str) -> dict:
     """Return {'email': str|None, 'phone': str|None} found in resume text."""
     email_match = EMAIL_PATTERN.search(text or "")
@@ -333,7 +316,6 @@ def extract_contact_info(text: str) -> dict:
         "phone": phone_match.group(0) if phone_match else None,
     }
 
-
 def check_sections(text: str) -> dict:
     """Return {section_name: bool_found} for core + bonus resume sections."""
     lower = (text or "").lower()
@@ -341,7 +323,6 @@ def check_sections(text: str) -> dict:
     for section, aliases in {**CORE_SECTIONS, **BONUS_SECTIONS}.items():
         found[section] = any(alias in lower for alias in aliases)
     return found
-
 
 def compute_ats_score(resume_text: str, job_description: str, meta: dict = None) -> dict:
     """Compute an ATS-style compatibility score for a resume against a JD.
