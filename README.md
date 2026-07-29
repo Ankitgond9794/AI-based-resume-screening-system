@@ -33,7 +33,6 @@ resume-screening-app/
 └── sample_data/
     └── sample_resumes.py      # sample JD + resumes for quick testing
 ```
-
 ## 1. Get the model files
 
 The Decision Predictor tab needs three files in `models/`:
@@ -51,7 +50,6 @@ just drop them into `models/`.
 pip install -r requirements.txt
 python train_model.py --csv path/to/AI_Resume_Screening.csv
 ```
-
 This saves fresh `tfidf.pkl`, `model.pkl`, and `label_encoder.pkl` into `models/`.
 
 > The JD Matching & Ranking tab does **not** need these files — it builds a fresh TF-IDF
@@ -73,14 +71,12 @@ sudo apt-get install tesseract-ocr poppler-utils
 # https://github.com/UB-Mannheim/tesseract/wiki, and Poppler from
 # https://github.com/oschwartz10612/poppler-windows/releases
 ```
-
 Then:
 
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
-
 The app opens at `http://localhost:8501`.
 
 ## 3. Push to GitHub
@@ -93,14 +89,12 @@ git branch -M main
 git remote add origin https://github.com/<your-username>/<your-repo>.git
 git push -u origin main
 ```
-
 If your `model.pkl` / `tfidf.pkl` are large (a few MB is usually fine on GitHub;
 tens of MB+ needs [Git LFS](https://git-lfs.com)), check the file sizes before pushing:
 
 ```bash
 du -h models/*.pkl
 ```
-
 ## 4. Deploy on Streamlit Community Cloud
 
 1. Go to [share.streamlit.io](https://share.streamlit.io) and sign in with GitHub.
@@ -109,12 +103,3 @@ du -h models/*.pkl
    `packages.txt` (Tesseract, Poppler) alongside `requirements.txt` — no extra setup needed.
 4. First run may take a minute while NLTK downloads `stopwords`/`wordnet`/`punkt`
    (handled automatically by `utils.ensure_nltk_data()`).
-
-## Notes
-
-- `clean_text()` in `utils.py` matches the cleaning used for the classifier (matches
-  notebook cells 71–72).
-- `clean_text_negation()` and `rank_resumes()` power the JD matching tab (matches
-  notebook cells 83–87).
-- `train_model.py` expects a CSV with `Skills` and `Recruiter Decision` columns,
-  matching the `AI_Resume_Screening.csv` dataset from the notebook.
